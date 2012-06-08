@@ -4,6 +4,9 @@ import os, sys, time
 import pexpect
 from pexpect import EOF, TIMEOUT
 
+sys.path.insert(0, os.curdir)
+import repla  #Allow introspection
+
 def spawn():
   return pexpect.spawn('python repla.py', timeout=3)
 
@@ -13,21 +16,19 @@ def output(s, end='\n', *morestr):
   else:
     print >>sys.stderr, s + end,
 
-
 def print_failure():
   output('<<patterns>>')
-  output(repr(repla.searcher._searches))
+  output(repr(proc.searcher._searches))
   output('<<buffer>>')
-  output(repla.buffer[-100:])
+  output(proc.buffer[-100:])
   output('<<before>>')
-  output(repla.before[-100:])
-
-repla = spawn
+  output(proc.before[-100:])
 
 CTRL_C = 1
 CTRL_D = 2
 
 prompt = '\r\n\\$'
+testdir = os.path.realpath(os.curdir)
 
 strings = (
     ( 'sanity', CTRL_C, prompt),
@@ -35,16 +36,15 @@ strings = (
     ( 'unknown command fun', '%thisnotacommand', 'repla.py: Unknown command: '),
     ( 'exit builtin', '%exit', EOF ),
     ( 'exit noninteger', '%exit noninteger', 'exit: Expected integer'),
-    ( 'exit too many args', '%exit 1 2', 'Expected one arg'),
-    ( 'pwd builtin', '%pwd', os.path.realpath(os.curdir)),
-    ( 'pwd too many args', '%pwd arg', 'No arguments expected'),
-    ( 'cd builtin', '%cd ..\n%pwd', os.path.dirname(os.path.realpath(os.curdir))),
-    ( 'cd too many args', '%cd this other', 'Expected one arg'),
-    ( 'cd too few args', '%cd', 'Expected one arg'),
-
+    ( 'exit too many args', '%exit 1 2', repla.onearg),
+    ( 'pwd builtin', '%pwd', testdir),
+    ( 'pwd too many args', '%pwd arg', repla.noargs),
+    ( 'cd builtin', '%cd ..\n%pwd', os.path.dirname(testdir)),
+    ( 'cd too many args', '%cd this other', repla.onearg),
+    ( 'cd too few args', '%cd', repla.onearg),
   )
 
-repla = spawn()
+proc = spawn()
 
 #Give Python time to start up
 time.sleep(1)
@@ -52,14 +52,14 @@ time.sleep(1)
 for name,send,expect in strings:
   output(name + '...', end='')
   if send is CTRL_C:
-    repla.sendintr()
+    proc.sendintr()
   elif send is CTRL_D:
-    repla.sendeof()
+    proc.sendeof()
   else:
-    repla.sendline(send)
+    proc.sendline(send)
 
   try:
-    repla.expect(expect)
+    proc.expect(expect)
     output('ok')
   except EOF as e:
     output('FAIL')
@@ -69,4 +69,4 @@ for name,send,expect in strings:
     print_failure()
   finally:
     if expect == EOF:
-      repla = spawn()
+      proc = spawn()
