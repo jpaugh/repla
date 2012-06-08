@@ -7,6 +7,21 @@ from pexpect import EOF, TIMEOUT
 def spawn():
   return pexpect.spawn('python repla.py', timeout=3)
 
+def output(s, end='\n', *morestr):
+  if morestr:
+    print >>sys.stderr, s, ' '.join(s) + end,
+  else:
+    print >>sys.stderr, s + end,
+
+
+def print_failure():
+  output('<<patterns>>')
+  output(repr(repla.searcher._searches))
+  output('<<buffer>>')
+  output(repla.buffer[-100:])
+  output('<<before>>')
+  output(repla.before[-100:])
+
 repla = spawn
 
 CTRL_C = 1
@@ -35,7 +50,7 @@ repla = spawn()
 time.sleep(1)
 
 for name,send,expect in strings:
-  print >>sys.stderr, name, '...',
+  output(name + '...', end='')
   if send is CTRL_C:
     repla.sendintr()
   elif send is CTRL_D:
@@ -45,13 +60,13 @@ for name,send,expect in strings:
 
   try:
     repla.expect(expect)
-    print >>sys.stderr, 'ok'
+    output('ok')
   except EOF as e:
-    print >>sys.stderr, 'FAIL'
-    print >>sys.stderr, e
+    output('FAIL')
+    print_failure()
   except TIMEOUT as e:
-    print >>sys.stderr, 'FAIL'
-    print >>sys.stderr, e
+    output('FAIL')
+    print_failure()
   finally:
     if expect == EOF:
       repla = spawn()
