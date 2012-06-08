@@ -8,9 +8,18 @@ def main():
   while True:
     try:
       cmd = get_cmd()
-      run_cmd(cmd)
+      how_do_cmd(cmd)
     except KeyboardInterrupt:
       print
+
+def how_do_cmd(cmd):
+  '''Figure out how to run a cmd'''
+  if not cmd:
+    return
+  elif cmd[0][0] == '%':
+    run_cmdfun(cmd)
+  else:
+    run_cmd(cmd)
 
 def run_cmd(cmd):
   '''Run the command with args as its arglist. Returns the command's
@@ -19,11 +28,50 @@ def run_cmd(cmd):
   cmd.insert(0, 'git')
   return sub(cmd)
 
+def run_cmdfun(cmd):
+  '''invoke a command function. These functions follow the following
+  protocol:
+
+  - method of CmdFun class
+  - accepts two parameters: self, arglist
+  - given the command name is foo, the method name is cmdFoo
+  '''
+  name = cmd.pop(0)[1:]
+  cmdObj.curcmd = name
+  cmdObj.errcode = 0
+
+  funname = 'cmd' + name.title()
+  fun = getattr(cmdObj, funname, None)
+  if fun is not None:
+    fun(cmd)
+  else:
+    fail('Unknown command: ' + cmdObj.curcmd)
+
 def sub(cmd):
   '''run a command'''
   #NOTE: May fail with OSError
   child = subprocess.Popen(cmd)
   return child.wait()
+
+class Cmd(object):
+  errcode = 0
+  curcmd = None
+
+  def cmdExit(self, args):
+    retcode = 0
+    if len(args) > 1:
+      cmdfail(expectedargs % 1)
+      return
+    if args:
+      try:
+	retcode = int(args[0])
+      except ValueError:
+	cmdfail('Expected integer')
+	return
+    sys.exit(retcode)
+
+cmdObj = Cmd()
+
 
 # UI Functions
 ##############
@@ -43,6 +91,31 @@ def fmt_ps1():
   '''return a formatted prompt'''
   #TODO: real ps1 handling
   return '$ '
+
+def fail(*msg):
+  errcode = 1
+  warn(sys.argv[0]+':', *msg)
+
+def cmdfail(*msg):
+  warn(cmdObj.curcmd+':', *msg)
+  errcode = 1
+
+def warn(*msg):
+  msg = ' '.join(msg)
+  print >>sys.stderr, msg
+
+def show(*msg):
+  msg = ' '.join(msg)
+  print msg
+
+
+# Strings
+##########
+
+#NOTE: Please use these to keep user messages uniform
+
+noargs = 'No arguments expected'
+expectedargs = 'Expected %d args'
 
 if __name__ == '__main__':
   try:
