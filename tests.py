@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys, time
+import os, sys, time
 
 import pexpect
 from pexpect import EOF, TIMEOUT
@@ -20,7 +20,13 @@ strings = (
     ( 'unknown command fun', '%thisnotacommand', 'repla.py: Unknown command: '),
     ( 'exit builtin', '%exit', EOF ),
     ( 'exit noninteger', '%exit noninteger', 'exit: Expected integer'),
-    ( 'exit too many args', '%exit 1 2', 'Expected 1 args'),
+    ( 'exit too many args', '%exit 1 2', 'Expected one arg'),
+    ( 'pwd builtin', '%pwd', os.path.realpath(os.curdir)),
+    ( 'pwd too many args', '%pwd arg', 'No arguments expected'),
+    ( 'cd builtin', '%cd ..\n%pwd', os.path.dirname(os.path.realpath(os.curdir))),
+    ( 'cd too many args', '%cd this other', 'Expected one arg'),
+    ( 'cd too few args', '%cd', 'Expected one arg'),
+
   )
 
 repla = spawn()

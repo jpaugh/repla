@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import sys
 import shlex
 import subprocess
@@ -57,10 +58,16 @@ class Cmd(object):
   errcode = 0
   curcmd = None
 
+  def cmdCd(self, args):
+    if len(args) == 1:
+      os.chdir(args[0])
+    else:
+      cmdfail(onearg)
+
   def cmdExit(self, args):
     retcode = 0
     if len(args) > 1:
-      cmdfail(expectedargs % 1)
+      cmdfail(onearg)
       return
     if args:
       try:
@@ -69,6 +76,12 @@ class Cmd(object):
 	cmdfail('Expected integer')
 	return
     sys.exit(retcode)
+
+  def cmdPwd(self, args):
+    if not args:
+      show(os.path.realpath('.'))
+    else:
+      cmdfail(noargs)
 
 cmdObj = Cmd()
 
@@ -116,6 +129,7 @@ def show(*msg):
 
 noargs = 'No arguments expected'
 expectedargs = 'Expected %d args'
+onearg = 'Expected one arg'
 
 if __name__ == '__main__':
   try:
