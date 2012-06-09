@@ -18,7 +18,8 @@ def output(s, end='\n', *morestr):
 
 def print_failure():
   output('<<patterns>>')
-  output(repr(proc.searcher._searches))
+  for patt in proc.searcher._searches:
+    output(str(patt[0])+ ' '+ repr(patt[1].pattern))
   output('<<buffer>>')
   output(proc.buffer[-100:])
   output('<<before>>')
