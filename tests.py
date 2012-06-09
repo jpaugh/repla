@@ -65,9 +65,9 @@ def print_failure(proc):
   for patt in proc.searcher._searches:
     output(str(patt[0])+ ' '+ repr(patt[1].pattern))
   output('<<buffer>>')
-  output(proc.buffer[-100:])
+  output(repr(proc.buffer[-100:]))
   output('<<before>>')
-  output(proc.before[-100:])
+  output(repr(proc.before[-100:]))
   output('')
 
 
