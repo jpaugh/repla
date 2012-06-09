@@ -73,6 +73,7 @@ strings = (
     test_setopt('wrapped', val='gitk'),
     test_ckopt('PS1'),
     test_setopt('PS1', '%(wrapped)s$ '),
+    ( 'shell command', '!echo success', 'success'),
   )
 
 proc = spawn()

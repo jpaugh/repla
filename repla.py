@@ -17,6 +17,9 @@ def how_do_cmd(cmd):
   '''Figure out how to run a cmd'''
   if not cmd:
     return
+  if isinstance(cmd, basestring):
+    if cmd[0] == '!':
+      run_shcmd(cmd)
   elif cmd[0][0] == '%':
     run_cmdfun(cmd)
   else:
@@ -48,10 +51,14 @@ def run_cmdfun(cmd):
   else:
     fail('Unknown command: ' + cmdObj.curcmd)
 
-def sub(cmd):
+def run_shcmd(cmd):
+  cmd = cmd[1:]
+  sub(cmd, shell=True)
+
+def sub(cmd, **kwargs):
   '''run a command'''
   #NOTE: May fail with OSError
-  child = subprocess.Popen(cmd)
+  child = subprocess.Popen(cmd, **kwargs)
   return child.wait()
 
 class Cmd(object):
@@ -124,8 +131,10 @@ for opt in option_meta:
 
 def get_cmd(prompt=None):
   '''prompt the user for a cmd, and return a shlex of their input'''
-  cmd = shlex.split(get_line(prompt))
-  return cmd
+  line = get_line(prompt)
+  if line[0] == '!':  #Return sh commands as is
+    return line
+  return shlex.split(line)
 
 def get_line(prompt=None):
   '''prompt the user for a line'''
