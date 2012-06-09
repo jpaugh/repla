@@ -1,12 +1,46 @@
 #!/usr/bin/env python
-import os, sys, time
 import re
+import os
+import sys
+import time
 
 import pexpect
 from pexpect import EOF, TIMEOUT
 
 sys.path.insert(0, os.curdir)
 import repla  #Allow introspection
+
+def run_tests():
+  output(time.strftime('Tests run at %T %Z %D'))
+  output('')
+
+  tests_passed = 0
+  tests_failed = 0
+
+  proc = spawn()
+  time.sleep(1)	    #Give Python time to start up
+
+  for name,send,expect in strings:
+    output(name + '...', end='')
+    if send is CTRL_C:
+      proc.sendintr()
+    elif send is CTRL_D:
+      proc.sendeof()
+    else:
+      proc.sendline(send)
+
+    try:
+      proc.expect(expect)
+      output('ok')
+    except EOF as e:
+      output('FAIL')
+      print_failure(proc)
+    except TIMEOUT as e:
+      output('FAIL')
+      print_failure(proc)
+    finally:
+      if expect == EOF:
+	proc = spawn()
 
 def spawn():
   return pexpect.spawn('python repla.py', timeout=3)
@@ -17,7 +51,7 @@ def output(s, end='\n', *morestr):
   else:
     print >>sys.stderr, s + end,
 
-def print_failure():
+def print_failure(proc):
   output('<<patterns>>')
   for patt in proc.searcher._searches:
     output(str(patt[0])+ ' '+ repr(patt[1].pattern))
@@ -55,9 +89,10 @@ prompt = repla.options['PS1']
 testdir = os.path.realpath(os.curdir)
 
 strings = (
+    # description, send, expect
     ( 'sanity', CTRL_C, prompt % repla.options),
     ( 'basic command', '--version', 'git version'),
-    ( 'unknown command fun', '%thisnotacommand', 'repla.py: Unknown command: '),
+    ( 'unknown builtin fun', '%thisnotacommand', 'repla.py: Unknown command: '),
     ( 'exit builtin', '%exit', EOF ),
     ( 'exit noninteger', '%exit noninteger', 'exit: Expected integer'),
     ( 'exit too many args', '%exit 1 2', repla.onearg),
@@ -76,29 +111,4 @@ strings = (
     ( 'shell command', '!echo success', 'success'),
   )
 
-proc = spawn()
-
-#Give Python time to start up
-time.sleep(1)
-
-for name,send,expect in strings:
-  output(name + '...', end='')
-  if send is CTRL_C:
-    proc.sendintr()
-  elif send is CTRL_D:
-    proc.sendeof()
-  else:
-    proc.sendline(send)
-
-  try:
-    proc.expect(expect)
-    output('ok')
-  except EOF as e:
-    output('FAIL')
-    print_failure()
-  except TIMEOUT as e:
-    output('FAIL')
-    print_failure()
-  finally:
-    if expect == EOF:
-      proc = spawn()
+run_tests()
