@@ -107,6 +107,10 @@ option_meta = [
       'doc': 'program to pass each command line to',
       'default': 'git',
       },
+    { 'name': 'PS1',
+      'doc': 'primary prompt. Use %(name)s to insert option name as a string into the prompt string.',
+      'default': '%(wrapped)s: ',
+      }
   ]
 
 options = {}
@@ -131,7 +135,7 @@ def get_line(prompt=None):
 
 def fmt_ps1():
   '''return a formatted prompt'''
-  return '%(wrapped)s: ' % options
+  return options['PS1'] % options
 
 def fmt_dict(d):
   fmts = []

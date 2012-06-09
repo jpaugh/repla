@@ -51,7 +51,7 @@ def test_setopt(opt, val='foo'):
 CTRL_C = 1
 CTRL_D = 2
 
-prompt = '%(wrapped)s: '
+prompt = repla.options['PS1']
 testdir = os.path.realpath(os.curdir)
 
 strings = (
@@ -71,6 +71,8 @@ strings = (
     ( 'set unknown option', '%set figgily=2', repla.unknownopt % 'figgily'),
     test_ckopt('wrapped'),
     test_setopt('wrapped', val='gitk'),
+    test_ckopt('PS1'),
+    test_setopt('PS1', '%(wrapped)s$ '),
   )
 
 proc = spawn()
