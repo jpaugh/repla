@@ -11,7 +11,8 @@ sys.path.insert(0, os.curdir)
 import repla  #Allow introspection
 
 def run_tests():
-  output(time.strftime('Tests run at %T %Z %D'))
+  output('Running %s tests' % len(strings), end='')
+  output(time.strftime(' at %T %Z %D'))
   output('')
 
   tests_passed = 0
@@ -32,15 +33,23 @@ def run_tests():
     try:
       proc.expect(expect)
       output('ok')
+      tests_passed += 1
     except EOF as e:
       output('FAIL')
       print_failure(proc)
+      tests_failed += 1
     except TIMEOUT as e:
       output('FAIL')
       print_failure(proc)
+      tests_failed += 1
     finally:
       if expect == EOF:
 	proc = spawn()
+
+  output('')
+  output('Passed %s/%s' % (tests_passed, len(strings)))
+  if tests_failed != 0:
+    output('Failed %s!' % tests_failed)
 
 def spawn():
   return pexpect.spawn('python repla.py', timeout=3)
