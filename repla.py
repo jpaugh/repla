@@ -26,7 +26,7 @@ def run_cmd(cmd):
   '''Run the command with args as its arglist. Returns the command's
   returncode.
   '''
-  cmd.insert(0, 'git')
+  cmd.insert(0, options['wrapped'])
   return sub(cmd)
 
 def run_cmdfun(cmd):
@@ -83,7 +83,36 @@ class Cmd(object):
     else:
       cmdfail(noargs)
 
+  def cmdSet(self, args):
+    if not args:
+      show(fmt_dict(options))
+    else:
+      for word in args:
+	if '=' in word:
+	  key, val = word.split('=')
+	  if key in options:
+	    options[key] = val
+	  else:
+	    cmdfail(unknownopt % key)
+	else:
+	  if word in options:
+	    show('%s = %s' % (word, repr(options[word])))
+	  else:
+	    cmdfail(unknownopt % word)
+
 cmdObj = Cmd()
+
+option_meta = [
+    { 'name': 'wrapped',
+      'doc': 'program to pass each command line to',
+      'default': 'git',
+      },
+  ]
+
+options = {}
+
+for opt in option_meta:
+  options[opt['name']] = opt['default']
 
 
 # UI Functions
@@ -102,8 +131,18 @@ def get_line(prompt=None):
 
 def fmt_ps1():
   '''return a formatted prompt'''
-  #TODO: real ps1 handling
-  return '$ '
+  return '%(wrapped)s: ' % options
+
+def fmt_dict(d):
+  fmts = []
+  for key in d:
+    fmts.append('%s = %s' % (key, repr(d[key])))
+
+  return fmt_list(fmts)
+
+def fmt_list(l):
+  #TODO: multi-column output
+  return ', '.join(l)
 
 def fail(*msg):
   errcode = 1
@@ -130,6 +169,7 @@ def show(*msg):
 noargs = 'No arguments expected'
 expectedargs = 'Expected %d args'
 onearg = 'Expected one arg'
+unknownopt = 'Unknown option: %s'
 
 if __name__ == '__main__':
   try:
