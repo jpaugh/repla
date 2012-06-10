@@ -117,6 +117,10 @@ option_meta = [
     { 'name': 'PS1',
       'doc': 'primary prompt. Use %(name)s to insert option name as a string into the prompt string.',
       'default': '%(wrapped)s: ',
+      },
+    { 'name': 'PS2',
+      'doc': 'secondary prompt. Use %(name)s to insert option name as a string into the prompt string.',
+      'default': '. ',
       }
   ]
 
@@ -132,6 +136,8 @@ for opt in option_meta:
 def get_cmd(prompt=None):
   '''prompt the user for a cmd, and return a shlex of their input'''
   line = get_line(prompt)
+  while line[-1] == '\\':
+    line = line[:-1] + get_line(options['PS2'])
   if line[0] == '!':  #Return sh commands as is
     return line
   return shlex.split(line)
