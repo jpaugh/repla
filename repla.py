@@ -146,7 +146,7 @@ def get_cmd(prompt=None):
   '''prompt the user for a cmd, and return a shlex of their input'''
   line = get_line(prompt)
   while line[-1] == '\\':
-    line = line[:-1] + get_line(options['PS2'])
+    line = line[:-1] + get_line(format_opt_str('PS2'))
   if line[0] == '!':  #Return sh commands as is
     return line
   return shlex.split(line)
@@ -154,15 +154,20 @@ def get_cmd(prompt=None):
 def get_line(prompt=None):
   '''prompt the user for a line'''
   if prompt is None:
-    prompt = fmt_ps1()
+    prompt = format_opt_str('PS1')
   return raw_input(prompt)
 
-def fmt_ps1():
-  '''return a formatted prompt'''
-  return options['PS1'] % options
-
 def fmt_title():
-  return '\033k%s\033\\' % (options['title'] % options)
+  return '\033k%s\033\\' % format_opt_str('title')
+
+def format_opt_str(opt):
+  '''Several options allow Pythonic formatting; this function catches
+  formatting errors in such to avoid crashing.
+  '''
+  try:
+    return options[opt] % options
+  except:
+    return options[opt]
 
 def fmt_dict(d):
   fmts = []
