@@ -8,6 +8,7 @@ import subprocess
 import readline
 
 def main():
+  print fmt_title()
   while True:
     try:
       cmd = get_cmd()
@@ -101,6 +102,8 @@ class Cmd(object):
 	  key, val = word.split('=')
 	  if key in options:
 	    options[key] = val
+	    if key == 'title':
+	      print fmt_title()
 	  else:
 	    cmdfail(unknownopt % key)
 	else:
@@ -123,6 +126,10 @@ option_meta = [
     { 'name': 'PS2',
       'doc': 'secondary prompt. Use %(name)s to insert option name as a string into the prompt string.',
       'default': '. ',
+      },
+    { 'name': 'title',
+      'doc': 'Sets the title sent to the terminal. Use same format as for PS1',
+      'default': '%(wrapped)s',
       }
   ]
 
@@ -153,6 +160,9 @@ def get_line(prompt=None):
 def fmt_ps1():
   '''return a formatted prompt'''
   return options['PS1'] % options
+
+def fmt_title():
+  return '\033k%s\033\\' % (options['title'] % options)
 
 def fmt_dict(d):
   fmts = []
