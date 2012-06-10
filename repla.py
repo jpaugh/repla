@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+'''Copyright 2012 Jonathan Paugh. Please see LICENSE for details.'''
+
 import os
 import sys
 import shlex
