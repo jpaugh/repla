@@ -8,3 +8,10 @@ call repeatedly from your shell. `repla` saves you typing!
 `repla` was born of my annoyance with retyping `git cmd` all of the
 time. So the focus of it's development is to make `git` (or any command)
 less annoying. And it does.
+
+LICENSE
+=======
+repla is licensed under the terms of the GNU General Public License,
+version 2. Please see [LICENSE][1] for details.
+
+[1]: https://github.com/jpaugh64/repla/blob/master/LICENSE

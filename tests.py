@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+'''Copyright 2012 Jonathan Paugh. Please see LICENSE for details.'''
+
 import re
 import os
 import sys
