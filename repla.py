@@ -77,13 +77,13 @@ class Cmd(object):
   def cmdExit(self, args):
     retcode = 0
     if len(args) > 1:
-      cmdfail(onearg)
+      cmdfail(manyargs)
       return
     if args:
       try:
 	retcode = int(args[0])
       except ValueError:
-	cmdfail('Expected integer')
+	cmdfail(expectedint)
 	return
     sys.exit(retcode)
 
@@ -206,7 +206,10 @@ def show(*msg):
 
 noargs = 'No arguments expected'
 expectedargs = 'Expected %d args'
+expectedint = 'Expected integer'
 onearg = 'Expected one arg'
+manyargs = 'Too many args'
+fewargs = 'Too few args'
 unknownopt = 'Unknown option: %s'
 
 if __name__ == '__main__':
