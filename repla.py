@@ -134,15 +134,15 @@ option_meta = [
       'default': 'git',
       },
     { 'name': 'PS1',
-      'doc': 'primary prompt. Use %(name)s to insert option name as a string into the prompt string.',
+      'doc' : 'primary prompt. Use %(name)s to insert option name as a string into the prompt string.',
       'default': '%(wrapped)s: ',
       },
     { 'name': 'PS2',
-      'doc': 'secondary prompt. Use %(name)s to insert option name as a string into the prompt string.',
+      'doc' : 'secondary prompt. Use %(name)s to insert option name as a string into the prompt string.',
       'default': '. ',
       },
     { 'name': 'title',
-      'doc': 'Sets the title sent to the terminal. Use same format as for PS1',
+      'doc' : 'Sets the title sent to the terminal. Use same format as for PS1',
       'default': '%(wrapped)s',
       }
   ]
