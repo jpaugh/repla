@@ -86,10 +86,12 @@ def test_ckopt(opt):
 	    '%%set %(opt)s' % d,
 	    '%(opt)s = %(val)s' % d)
 
-def test_setopt(opt, val='foo'):
+def test_setopt(opt, mesg=None, val='foo'):
   val_r = re_escape(repr(val))
   d = { 'opt': opt, 'val': repr(val), 'val_r': val_r }
-  return (  'set %(opt)s option' % d,
+  if not mesg:
+    mesg = 'set %(opt)s option' % d
+  return (  mesg,
 	    '%%set %(opt)s=%(val)s\n%%set %(opt)s' % d,
 	    '%(opt)s = %(val_r)s' % d )
 
@@ -127,6 +129,7 @@ strings = (
     test_setopt('prefix'),
     test_ckopt('postfix'),
     test_setopt('postfix'),
+    test_setopt('prefix', val='--this=that', mesg='set option with embedded "="'),
     ( 'shell command', '!echo success', 'success'),
     ( 'line continuation', '!echo broken \\\nline', 'broken line'),
     ( 'reset to known state', '%exit', EOF ),

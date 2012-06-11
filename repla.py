@@ -113,7 +113,7 @@ class Cmd(object):
     else:
       for word in args:
 	if '=' in word:
-	  key, val = word.split('=')
+	  key, val = word.split('=', 1)
 	  if key in options:
 	    options[key] = val
 	    if key == 'title':
