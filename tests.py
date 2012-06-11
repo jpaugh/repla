@@ -120,7 +120,9 @@ strings = (
     test_ckopt('PS1'),
     test_setopt('PS1', '%(wrapped)s$ '),
     ( 'shell command', '!echo success', 'success'),
-    ( 'line continuation', '!echo broken \\\nline', 'broken line' ),
+    ( 'line continuation', '!echo broken \\\nline', 'broken line'),
+    ( 'reset to known state', '%exit', EOF ),
+    ( 'empty line regression', '', prompt % repla.options),
   )
 
 run_tests()
