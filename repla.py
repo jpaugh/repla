@@ -193,8 +193,28 @@ def fmt_dict(d):
   return fmt_list(fmts)
 
 def fmt_list(l):
-  #TODO: multi-column output
-  return ', '.join(l)
+  from math import ceil
+  scr_w = term_width()
+  col_w = 0
+  col_padding = '  '
+  row_padding = '\n'
+  for val in l:
+    if len(val) > col_w:
+      col_w = len(val)
+  cols = scr_w/col_w + len(col_padding)
+  rows = int(ceil(float(len(l)) / cols))
+  lp = []
+  try:
+    for r in xrange(rows):
+      row = []
+      lp.append(row)
+      for c in xrange(cols):
+	row.append(l[r+c*rows].ljust(col_w))
+  except IndexError:
+    #Not enough elems to fill last row; oh well.
+    pass
+  lp = [ col_padding.join(x) for x in lp ]
+  return row_padding.join(lp)
 
 def term_height():
   return term_dimen()[0]
