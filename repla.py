@@ -74,6 +74,20 @@ class Cmd(object):
     else:
       cmdfail(onearg)
 
+  def cmdDimen(self, args):
+    if len(args) > 1:
+      cmdfail(manyargs)
+      return
+    elif args:
+      try:
+	fd = int(args[0])
+      except ValueError:
+	cmdfail(expectedint)
+	return
+    else:
+      fd = 0
+    show('rows: %d cols: %d' % term_dimen(fd))
+
   def cmdExit(self, args):
     retcode = 0
     if len(args) > 1:
@@ -181,6 +195,30 @@ def fmt_dict(d):
 def fmt_list(l):
   #TODO: multi-column output
   return ', '.join(l)
+
+def term_height():
+  return term_dimen()[0]
+
+def term_width():
+  return term_dimen()[1]
+
+def term_dimen(fd=0):
+  import termios
+  import fcntl
+  import struct
+  h,w = (25,80)
+
+  '''See man pages tty_ioctl(4) and termios(3) for details
+  Note that '_'*4 is a synonym for struct.pack('hhhh', 0,0,0,0) for the
+  purposes of fcntl.ioctl. We only need to retreive the first two
+  values, however, as the other two have only historic use.
+  '''
+  try:
+    dense = fcntl.ioctl(0, termios.TIOCGWINSZ, '_'*4)
+    h,w = struct.unpack('hh', dense)
+  except IOError:
+    pass
+  return h,w
 
 def fail(*msg):
   errcode = 1
