@@ -133,6 +133,14 @@ option_meta = [
       'doc': 'program to pass each command line to',
       'default': 'git',
       },
+    { 'name': 'prefix',
+      'doc' : 'string prepended to each line before sending it to wrapped command',
+      'default': '',
+      },
+    { 'name': 'postfix',
+      'doc' : 'string appended to each line before sending it to wrapped command',
+      'default': '',
+      },
     { 'name': 'PS1',
       'doc' : 'primary prompt. Use %(name)s to insert option name as a string into the prompt string.',
       'default': '%(wrapped)s: ',
@@ -165,6 +173,8 @@ def get_cmd(prompt=None):
     line = line[:-1] + get_line(format_opt_str('PS2'))
   if line[0] == '!':  #Return sh commands as is
     return line
+  if line[0] != '%':
+    line = ' '.join((options['prefix'], line, options['postfix']))
   return shlex.split(line)
 
 def get_line(prompt=None):
