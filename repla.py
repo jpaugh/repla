@@ -8,7 +8,7 @@ import subprocess
 import readline
 
 def main():
-  print fmt_title()
+  print fmt_title(),
   while True:
     try:
       cmd = get_cmd()
@@ -117,7 +117,7 @@ class Cmd(object):
 	  if key in options:
 	    options[key] = val
 	    if key == 'title':
-	      print fmt_title()
+	      print fmt_title(),
 	  else:
 	    cmdfail(unknownopt % key)
 	else:
