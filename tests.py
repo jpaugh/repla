@@ -102,6 +102,7 @@ testdir = os.path.realpath(os.curdir)
 strings = (
     # description, send, expect
     ( 'sanity', CTRL_C, prompt % repla.options),
+    ( 'Ctrl+D EOF', CTRL_D, EOF),
     ( 'basic command', '--version', 'git version'),
     ( 'unknown builtin fun', '%thisnotacommand', 'repla.py: Unknown command: '),
     ( 'exit builtin', '%exit', EOF ),
