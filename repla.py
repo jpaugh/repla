@@ -197,7 +197,7 @@ def format_opt_str(opt):
 
 def fmt_dict(d):
   fmts = []
-  for key in d:
+  for key in sorted(d):
     fmts.append('%s = %s' % (key, repr(d[key])))
 
   return fmt_list(fmts)
@@ -211,18 +211,22 @@ def fmt_list(l):
   for val in l:
     if len(val) > col_w:
       col_w = len(val)
-  cols = scr_w/col_w + len(col_padding)
+  cols = scr_w/(col_w + len(col_padding))
   rows = int(ceil(float(len(l)) / cols))
   lp = []
-  try:
-    for r in xrange(rows):
-      row = []
-      lp.append(row)
-      for c in xrange(cols):
+  print '>> max: %d of %d' % ((col_w + len(col_padding)), scr_w)
+  print '>> cols: %d, rows %d' % (cols, rows)
+  for r in xrange(rows):
+    row = []
+    lp.append(row)
+    for c in xrange(cols):
+      dx = r+c*rows
+      if dx < len(l):
+	print '>>', r+c*rows, l[r+c*rows]
 	row.append(l[r+c*rows].ljust(col_w))
-  except IndexError:
-    #Not enough elems to fill last row; oh well.
-    pass
+      else:
+	break
+  print ''
   lp = [ col_padding.join(x) for x in lp ]
   return row_padding.join(lp)
 
