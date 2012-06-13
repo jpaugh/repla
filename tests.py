@@ -98,7 +98,7 @@ def test_setopt(opt, mesg=None, val='foo'):
 CTRL_C = 1
 CTRL_D = 2
 
-prompt = repla.options['PS1']
+prompt = re_escape(repla.options['PS1'])
 testdir = os.path.realpath(os.curdir)
 
 strings = (
@@ -134,6 +134,8 @@ strings = (
     ( 'line continuation', '!echo broken \\\nline', 'broken line'),
     ( 'reset to known state', '%exit', EOF ),
     ( 'empty line regression', '', prompt % repla.options),
+    ( 'empty continuation line error', '\\\n\n',
+      re_escape(repla.options['PS2'])),
   )
 
 run_tests()

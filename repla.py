@@ -166,9 +166,7 @@ for opt in option_meta:
 
 def get_cmd(prompt=None):
   '''prompt the user for a cmd, and return a shlex of their input'''
-  line = None
-  while not line:
-    line = get_line(prompt)
+  line = get_line(prompt)
   while line[-1] == '\\':
     line = line[:-1] + get_line(format_opt_str('PS2'))
   if line[0] == '!':  #Return sh commands as is
@@ -181,7 +179,11 @@ def get_line(prompt=None):
   '''prompt the user for a line'''
   if prompt is None:
     prompt = format_opt_str('PS1')
-  return raw_input(prompt)
+
+  line = ''
+  while line == '':
+    line += raw_input(prompt)
+  return line
 
 def fmt_title():
   return '\033k%s\033\\' % format_opt_str('title')
