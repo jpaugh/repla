@@ -88,6 +88,21 @@ class Cmd(object):
       fd = 0
     show('rows: %d cols: %d' % term_dimen(fd))
 
+  def cmdEnv(self, args):
+    '''TODO: docstring (similar to %set)'''
+    if not args:
+      show(fmt_dict(os.environ))
+    else:
+      for word in args:
+	if '=' in word:
+	  key, val = word.split('=', 1)
+	  os.environ[key] = val
+	else:
+	  if word in os.environ:
+	    show('%s = %s' % (word, repr(os.environ[word])))
+	  else:
+	    cmdfail(unknownenv % word)
+
   def cmdExit(self, args):
     retcode = 0
     if len(args) > 1:
@@ -284,6 +299,7 @@ onearg = 'Expected one arg'
 manyargs = 'Too many args'
 fewargs = 'Too few args'
 unknownopt = 'Unknown option: %s'
+unknownopt = 'Unknown environment variable: %s'
 
 if __name__ == '__main__':
   try:
