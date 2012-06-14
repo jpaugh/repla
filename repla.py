@@ -210,26 +210,25 @@ def fmt_list(l):
   col_w = 0
   col_padding = '  '
   row_padding = '\n'
+  lp = []
   for val in l:
     if len(val) > col_w:
       col_w = len(val)
   cols = scr_w/(col_w + len(col_padding))
-  rows = int(ceil(float(len(l)) / cols))
-  lp = []
-  print '>> max: %d of %d' % ((col_w + len(col_padding)), scr_w)
-  print '>> cols: %d, rows %d' % (cols, rows)
-  for r in xrange(rows):
-    row = []
-    lp.append(row)
-    for c in xrange(cols):
-      dx = r+c*rows
-      if dx < len(l):
-	print '>>', r+c*rows, l[r+c*rows]
-	row.append(l[r+c*rows].ljust(col_w))
-      else:
-	break
-  print ''
-  lp = [ col_padding.join(x) for x in lp ]
+  if cols == 0:
+    lp = l
+  else:
+    rows = int(ceil(float(len(l)) / cols))
+    for r in xrange(rows):
+      row = []
+      lp.append(row)
+      for c in xrange(cols):
+	dx = r+c*rows
+	if dx < len(l):
+	  row.append(l[r+c*rows].ljust(col_w))
+	else:
+	  break
+    lp = [ col_padding.join(x) for x in lp ]
   return row_padding.join(lp)
 
 def term_height():
