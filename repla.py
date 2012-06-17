@@ -7,6 +7,9 @@ import shlex
 import subprocess
 import readline
 
+from command import CmdBase
+from util import *
+
 def main():
   print fmt_title(),
   while True:
@@ -64,34 +67,31 @@ def sub(cmd, **kwargs):
   child = subprocess.Popen(cmd, **kwargs)
   return child.wait()
 
-class Cmd(object):
-  errcode = 0
-  curcmd = None
-
+class Cmd(CmdBase):
   def cmdCd(self, args):
     if len(args) == 1:
       os.chdir(args[0])
     else:
-      cmdfail(onearg)
+      self.cmdfail(onearg)
 
   def cmdDimen(self, args):
     if len(args) > 1:
-      cmdfail(manyargs)
+      self.cmdfail(manyargs)
       return
     elif args:
       try:
 	fd = int(args[0])
       except ValueError:
-	cmdfail(expectedint)
+	self.cmdfail(expectedint)
 	return
     else:
       fd = 0
-    show('rows: %d cols: %d' % term_dimen(fd))
+    self.show('rows: %d cols: %d' % term_dimen(fd))
 
   def cmdEnv(self, args):
     '''TODO: docstring (similar to %set)'''
     if not args:
-      show(fmt_dict(os.environ))
+      self.show(fmt_dict(os.environ))
     else:
       for word in args:
 	if '=' in word:
@@ -99,32 +99,32 @@ class Cmd(object):
 	  os.environ[key] = val
 	else:
 	  if word in os.environ:
-	    show('%s = %s' % (word, repr(os.environ[word])))
+	    self.show('%s = %s' % (word, repr(os.environ[word])))
 	  else:
-	    cmdfail(unknownenv % word)
+	    self.cmdfail(unknownenv % word)
 
   def cmdExit(self, args):
     retcode = 0
     if len(args) > 1:
-      cmdfail(manyargs)
+      self.cmdfail(manyargs)
       return
     if args:
       try:
 	retcode = int(args[0])
       except ValueError:
-	cmdfail(expectedint)
+	self.cmdfail(expectedint)
 	return
     sys.exit(retcode)
 
   def cmdPwd(self, args):
     if not args:
-      show(os.path.realpath('.'))
+      self.show(os.path.realpath('.'))
     else:
-      cmdfail(noargs)
+      self.cmdfail(noargs)
 
   def cmdSet(self, args):
     if not args:
-      show(fmt_dict(options))
+      self.show(fmt_dict(options))
     else:
       for word in args:
 	if '=' in word:
@@ -134,13 +134,12 @@ class Cmd(object):
 	    if key == 'title':
 	      print fmt_title(),
 	  else:
-	    cmdfail(unknownopt % key)
+	    self.cmdfail(unknownopt % key)
 	else:
 	  if word in options:
-	    show('%s = %s' % (word, repr(options[word])))
+	    self.show('%s = %s' % (word, repr(options[word])))
 	  else:
-	    cmdfail(unknownopt % word)
-
+	    self.cmdfail(unknownopt % word)
 cmdObj = Cmd()
 
 option_meta = [
@@ -271,21 +270,8 @@ def term_dimen(fd=0):
   return h,w
 
 def fail(*msg):
-  errcode = 1
+  cmdObj.errcode = 1
   warn(sys.argv[0]+':', *msg)
-
-def cmdfail(*msg):
-  warn(cmdObj.curcmd+':', *msg)
-  errcode = 1
-
-def warn(*msg):
-  msg = ' '.join(msg)
-  print >>sys.stderr, msg
-
-def show(*msg):
-  msg = ' '.join(msg)
-  print msg
-
 
 # Strings
 ##########
