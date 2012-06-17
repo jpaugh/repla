@@ -7,7 +7,7 @@ import shlex
 import subprocess
 import readline
 
-from command import CmdBase
+import command
 from util import *
 
 def main():
@@ -67,7 +67,7 @@ def sub(cmd, **kwargs):
   child = subprocess.Popen(cmd, **kwargs)
   return child.wait()
 
-class Cmd(CmdBase):
+class Cmd(command.CmdBase):
   def cmdCd(self, args):
     if len(args) == 1:
       os.chdir(args[0])
@@ -115,6 +115,38 @@ class Cmd(CmdBase):
 	self.cmdfail(expectedint)
 	return
     sys.exit(retcode)
+
+  def cmdImport(self, args):
+    '''pymodule
+
+    Import commands from a Python module. If it defines any classes that
+    derive from CmdBase, then they will be instantiated and loaded.
+    '''
+    if len(args) != 1:
+      self.cmdfail(onearg)
+      return
+    modname = args[0]
+    warn(modname)
+    pymod = __import__(modname, fromlist=['*'], level=0)
+    objs = 0
+    d = pymod.__dict__
+    for attr in d:
+      warn('var: %s type: %s' % (attr, type(d[attr])))
+      if (isinstance(d[attr], command.CmdBase) and
+	   d[attr] is not command.CmdBase):
+	self.addChild(d[attr])
+	objs += 1
+      elif (type(d[attr]) == type(command.CmdBase) and
+	    issubclass(d[attr], command.CmdBase)):
+	try:
+	  self.addChild(d[attr]())
+	  objs += 1
+	except ValueError:
+	  self.warn("Could not load class %s" % attr)
+    if objs > 0:
+      self.show("%d classes imported" % objs)
+    else:
+      self.cmdfail("%s does not export any commands" % modname)
 
   def cmdPwd(self, args):
     if not args:

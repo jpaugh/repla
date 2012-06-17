@@ -41,7 +41,7 @@ class CmdBase(object):
     return dx
 
   def addChild(self, child):
-    if not isinstance(child, self.__class__):
+    if not isinstance(child, CmdBase):
       raise Exception("%s cannot be added; is not a subclass of %s" %
 	  (child, self.__class__))
     self.__children.append(child)
