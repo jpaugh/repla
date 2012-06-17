@@ -287,9 +287,8 @@ fewargs = 'Too few args'
 unknownopt = 'Unknown option: %s'
 unknownopt = 'Unknown environment variable: %s'
 
-if __name__ == '__main__':
-  try:
-    main()
-  except EOFError:
-    print '', #Add newline iff needed
-    sys.exit(0)
+try:
+  main()
+except EOFError:
+  print '', #Add newline iff needed
+  sys.exit(0)
