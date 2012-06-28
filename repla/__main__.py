@@ -11,7 +11,7 @@ import command
 from util import *
 
 def main():
-  print fmt_title(),
+  rawshow(fmt_title())
   while True:
     try:
       cmd = get_cmd()
@@ -164,7 +164,7 @@ class Cmd(command.CmdBase):
 	  if key in options:
 	    options[key] = val
 	    if key == 'title':
-	      print fmt_title(),
+	      raw_show(fmt_title()),
 	  else:
 	    self.cmdfail(unknownopt % key)
 	else:
@@ -304,6 +304,9 @@ def term_dimen(fd=0):
 def fail(*msg):
   cmdObj.errcode = 1
   warn(sys.argv[0]+':', *msg)
+
+def rawshow(msg):
+  sys.stdout.write(msg)
 
 # Strings
 ##########
