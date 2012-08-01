@@ -18,6 +18,10 @@ def main():
       how_do_cmd(cmd)
     except KeyboardInterrupt:
       print
+    except Exception as e:
+      if isinstance(e, (EOFError, SyntaxError)):
+        raise e
+      print "exception: %s" % e
 
 def how_do_cmd(cmd):
   '''Figure out how to run a cmd'''
