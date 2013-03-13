@@ -11,6 +11,7 @@ import command
 from util import *
 
 def main():
+  cmdline_config()
   rawshow(fmt_title())
   while True:
     try:
@@ -29,10 +30,13 @@ def how_do_cmd(cmd):
     return
   if isinstance(cmd, basestring):
     if cmd[0] == '!':
+      #unsplit string. can only be a shell command ('!cmd...')
       run_shcmd(cmd)
   elif cmd[0][0] == '%':
+    #Is a list of args; first word is a built-in
     run_cmdfun(cmd)
   else:
+    #Is a list of args; first word is an argument to the command
     run_cmd(cmd)
 
 def run_cmd(cmd):
@@ -70,6 +74,47 @@ def sub(cmd, **kwargs):
   #NOTE: May fail with OSError
   child = subprocess.Popen(cmd, **kwargs)
   return child.wait()
+
+def cmdline_config():
+  '''configure defaults from the command line'''
+  arg = sys.argv[1:]
+  while arg:
+    if arg[0].startswith('--set'):
+      if arg[0].startswith('--set='):
+        # option is after '--set='
+        arg[0] = arg[0][6:]
+      else:
+        # option is next argument
+        del arg[0]
+
+      opts=arg[0].split(',')
+      opts.insert(0, '%set')
+      for opt in opts:
+        (k,v) = opt.split('=')
+        if k in options:
+          options[k] = v
+        else:
+          fail('unknown option: ' + str(k))
+      run_cmdfun(opts)
+    elif arg[0] == '--':
+      #break of repla options
+      del arg[0]
+      trailing_cmd_args(arg)
+    else:
+      trailing_cmd_args(arg)
+      break
+
+    # Get rid of the first argument, we're done with it.
+    del arg[0]
+
+def trailing_cmd_args(arg):
+  #wrapped command is specified on the command line.
+  options['wrapped'] = arg[0]
+  del arg[0]
+
+  #Remaining args are prefix-args for the wrapped command
+  options['prefix'] = ' '.join(arg)
+
 
 class Cmd(command.CmdBase):
   def cmdCd(self, args):

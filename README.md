@@ -85,7 +85,25 @@ and then in `repla`:
     Hello, world!
 ```
 
-See [this][2] for details.
+See [here][2] for details.
+
+Command Line
+------------
+`repla` now sports command-line options, which was long overdue. Briefly:
+
+    repla [--set=OPTION=VALUE[,OPTION=VALUE]... [COMMAND [ARGS]]
+
+You can set any option's value using the `--set` option. It takes a
+comma-separated list of `OPTION=VALUE` pairs, and is equivalent to
+specifying `%set OPTION=VALUE ...` on the command line. You can separate
+the flag from the `OPTION=VALUE` pairs either with an equals sign or a
+space.
+
+As a shorthand for `--set wrapped=COMMAND`, you can give the command to
+wrap after all of `repla`'s own options. Additionally, you can
+additional arguments after the `COMMAND`, which will be treated as prefix
+args.
+
 
 Features
 ========
@@ -94,6 +112,7 @@ Features
 - Execute sh commands: `!cmd args`
 - Built-in commands: `%cd`, `%pwd`, etc.
 - Extensible! You can make your own built-ins with Python.
+- Set options (and command/args) from the command-line
 
 TODOs
 =====
