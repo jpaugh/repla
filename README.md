@@ -1,3 +1,20 @@
+Notice
+======
+This project (could be) really cool, but is no longer actively
+maintained. I (the author) stopped using it because I didn't want to add
+a kajillion command-completion scripts and/or translate bash shell
+completion functions to python. And I can't live without completion for
+very long!
+
+However, if you're interested, let me know: If you want something added,
+or you find a bug, leave an [issue][new_issue]. If you have a patch, do
+a pull request: I'll get to it when I get to it, which could be a day or
+a few months. If you'd like to take up maintenance yourself, that'd be
+great: let me know. Or, if a lot of people care, I'll start working on
+it again.
+
+[new_isssue]: https://github.com/jpaugh/repla/issues/new
+
 Repl Any
 ========
 Use `repla` to convert any command into a shell. Think of it as a
